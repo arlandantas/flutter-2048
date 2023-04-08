@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter2048/components/game_bricks.dart';
 import 'package:flutter2048/providers/game.dart';
 import 'package:provider/provider.dart';
 
 const double cellsMargin = 5;
-const double cellsRadius = 5;
+const double cellsRadius = 10;
 
 class GameBoard extends StatelessWidget {
   final int boardWidth;
@@ -20,15 +21,7 @@ class GameBoard extends StatelessWidget {
           boardHeight: boardHeight,
           boardWidth: boardWidth,
         ),
-        // Positioned.fromRect(
-        //   rect: Rect.fromPoints(const Offset(20, 20), const Offset(50, 50)),
-        //   child: Container(
-        //     height: 50,
-        //     width: 50,
-        //     color: Colors.blueAccent,
-        //     child: const Text("Aloouu"),
-        //   ),
-        // )
+        const GameBricks(),
       ],
     );
   }
@@ -79,16 +72,6 @@ class BoardCell extends StatelessWidget {
           border: Border.all(color: Colors.black26),
         ),
         alignment: Alignment.center,
-        // child: const Text('AOBA'),
-        child: Consumer<Game>(
-          builder: (c, game, h) => Text(
-            game.getCellText(x: x, y: y),
-            style: const TextStyle(
-              fontSize: 30,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
       ),
     );
   }
