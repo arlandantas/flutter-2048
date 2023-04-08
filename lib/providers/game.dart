@@ -21,7 +21,6 @@ class Game extends ChangeNotifier {
     for (var i = 0; i < 5; i++) {
       addNumber();
     }
-    printBoard(boardData);
   }
 
   getCellValue({required int x, required int y}) {
@@ -31,7 +30,7 @@ class Game extends ChangeNotifier {
   String getCellText({required int x, required int y}) {
     int value = getCellValue(x: x, y: y);
     if (value == 0) return '';
-    return '${boardData[y][x]}';
+    return '$value';
   }
 
   setCellValue({required int x, required int y, required int value}) {
@@ -39,6 +38,12 @@ class Game extends ChangeNotifier {
   }
 
   addNumber() {
+    filledNumbers = 0;
+    walkToBoard((y, x) {
+      if (getCellValue(x: x, y: y) != 0) {
+        ++filledNumbers;
+      }
+    });
     if (filledNumbers >= cellsQty) {
       return;
     }
@@ -49,7 +54,7 @@ class Game extends ChangeNotifier {
       y = random.nextInt(boardHeight);
     } while (getCellValue(x: x, y: y) != 0);
     int value = maxExponent != minExponent ? (minExponent + random.nextInt(maxExponent - minExponent)) : minExponent;
-    setCellValue(x: x, y: y, value: value);
+    boardData[y][x] = value;
     ++filledNumbers;
   }
 
@@ -96,19 +101,6 @@ class Game extends ChangeNotifier {
     }
   }
 
-  printBoard(List<List<int>> board) {
-    String ret = '';
-    walkToBoard((i, j) {
-      int v = board[i][j];
-      // ret += '${v < 10 ? '0' : ''}$v ';
-      ret += '$v ';
-      if (j == boardWidth - 1) {
-        ret += '\n';
-      }
-    });
-    print('\n$ret');
-  }
-
   move(Directions direction) {
     print("Moving to $direction");
     var rotatedBoard = getRotatedBoard(boardData, direction);
@@ -138,7 +130,7 @@ class Game extends ChangeNotifier {
       checkCell(i, j - 1);
     }, minX: 1);
     boardData = getUnrotatedBoard(rotatedBoard, direction);
-    printBoard(boardData);
+    addNumber();
     notifyListeners();
   }
 }
