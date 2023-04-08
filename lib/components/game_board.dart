@@ -21,7 +21,10 @@ class GameBoard extends StatelessWidget {
           boardHeight: boardHeight,
           boardWidth: boardWidth,
         ),
-        const GameBricks(),
+        GameBricks(
+          boardHeight: boardHeight,
+          boardWidth: boardWidth,
+        ),
       ],
     );
   }
@@ -61,15 +64,13 @@ class BoardCell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print("Re-rendering Cell $y $x");
-
     return Expanded(
       key: Key('Cell$y$x'),
       child: Container(
         margin: const EdgeInsets.all(cellsMargin),
         decoration: BoxDecoration(
           borderRadius: const BorderRadius.all(Radius.circular(cellsRadius)),
-          border: Border.all(color: Colors.black26),
+          border: Border.all(color: Colors.black12),
         ),
         alignment: Alignment.center,
       ),

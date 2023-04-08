@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/widgets.dart';
+import 'package:flutter2048/types/brick.dart';
 import 'package:flutter2048/types/cell_move.dart';
 import 'package:flutter2048/types/directions.dart';
 import 'package:flutter2048/types/position.dart';
@@ -15,6 +16,7 @@ class Game extends ChangeNotifier {
   int filledNumbers = 0;
   bool moving = false;
   Set<CellMove> pendingMoves = {};
+  Set<Brick> bricks = {};
   final int boardWidth;
   final int boardHeight;
   late List<List<int>> boardData;
@@ -22,12 +24,17 @@ class Game extends ChangeNotifier {
   Game({this.boardWidth = 4, this.boardHeight = 4}) {
     boardData = List<List<int>>.generate(
       boardHeight,
-      (_) => List<int>.generate(boardWidth, (_) => 0),
+      (_) => List<int>.generate(
+        boardWidth,
+        (_) => 0,
+      ),
     );
     cellsQty = boardHeight * boardWidth;
     for (var i = 0; i < 5; i++) {
       addNumber();
     }
+    updateBricks();
+    notifyListeners();
   }
 
   getCellValue({required int x, required int y}) {
@@ -82,21 +89,32 @@ class Game extends ChangeNotifier {
     return getRotatedBoard(board, unrotateDirection);
   }
 
+  Position getRotatedPosition(Position origin, Directions direction) {
+    switch (direction) {
+      case Directions.up:
+        return Position(x: boardHeight - origin.y - 1, y: origin.x);
+      case Directions.down:
+        return Position(x: origin.y, y: boardWidth - 1 - origin.x);
+      case Directions.right:
+        return Position(x: boardHeight - origin.x - 1, y: boardWidth - 1 - origin.y);
+      default:
+        return origin;
+    }
+  }
+
   List<List<int>> getRotatedBoard(List<List<int>> board, Directions direction) {
     return List<List<int>>.generate(
       boardHeight,
-      (i) => List.generate(boardWidth, (j) {
-        switch (direction) {
-          case Directions.up:
-            return board[j][boardHeight - 1 - i];
-          case Directions.down:
-            return board[boardWidth - 1 - j][i];
-          case Directions.right:
-            return board[boardHeight - 1 - i][boardWidth - 1 - j];
-          default:
-            return board[i][j];
-        }
-      }),
+      (y) => List.generate(
+        boardWidth,
+        (x) {
+          Position rotatedPosition = getRotatedPosition(
+            Position(x: x, y: y),
+            direction,
+          );
+          return board[rotatedPosition.y][rotatedPosition.x];
+        },
+      ),
     );
   }
 
@@ -121,6 +139,7 @@ class Game extends ChangeNotifier {
     var rotatedBoard = getRotatedBoard(boardData, direction);
     Set<Position> blockedCells = {};
     bool anyMove = false;
+    Set<CellMove> rotatedPendingMoves = {};
     walkToBoard((i, j) {
       final int originValue = rotatedBoard[i][j] + 0;
       if (originValue == 0) return;
@@ -131,7 +150,11 @@ class Game extends ChangeNotifier {
 
         rotatedBoard[origin.y][origin.x] = 0;
         rotatedBoard[target.y][target.x] = finalValue;
-        pendingMoves.add(CellMove(origin: origin, target: target, finalValue: finalValue));
+        rotatedPendingMoves.add(CellMove(
+          origin: origin,
+          target: target,
+          finalValue: finalValue,
+        ));
         anyMove = true;
       }
 
@@ -156,10 +179,30 @@ class Game extends ChangeNotifier {
       checkCell(i, j - 1);
     }, minX: 1);
     boardData = getUnrotatedBoard(rotatedBoard, direction);
+    pendingMoves = rotatedPendingMoves
+        .map(
+          (e) => CellMove(
+            origin: getRotatedPosition(e.origin, direction),
+            target: getRotatedPosition(e.target, direction),
+            finalValue: e.finalValue,
+          ),
+        )
+        .toSet();
     if (anyMove) addNumber();
+    updateBricks();
     notifyListeners();
     Timer(movingDelay, () {
       moving = false;
+    });
+  }
+
+  updateBricks() {
+    bricks = {};
+    walkToBoard((x, y) {
+      int value = boardData[y][x];
+      if (value != 0) {
+        bricks.add(Brick(x: x, y: y, value: value));
+      }
     });
   }
 }
