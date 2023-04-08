@@ -112,24 +112,30 @@ class Game extends ChangeNotifier {
   move(Directions direction) {
     print("Moving to $direction");
     var rotatedBoard = getRotatedBoard(boardData, direction);
+    Set<String> blockedCells = {};
     walkToBoard((i, j) {
-      final int curValue = rotatedBoard[i][j] + 0;
-      if (curValue == 0) return;
-
-      if (rotatedBoard[i][j - 1] != 0) {
-        rotatedBoard[i][j - 1] += curValue;
-        rotatedBoard[i][j] = 0;
-        return;
-      }
+      final int originValue = rotatedBoard[i][j] + 0;
+      if (originValue == 0) return;
 
       rotatedBoard[i][j] = 0;
-      for (var k = j - 1; k > 0; k--) {
-        if (rotatedBoard[i][k] != 0) {
-          rotatedBoard[i][k + 1] = curValue;
+      checkCell(int y, int x) {
+        int targetValue = rotatedBoard[y][x];
+        if (targetValue != 0 || x == 0) {
+          String cellKey = '$y$x';
+          if (blockedCells.contains(cellKey) || (targetValue != 0 && targetValue != originValue)) {
+            rotatedBoard[y][x + 1] += originValue;
+            return;
+          }
+          rotatedBoard[y][x] += originValue;
+          if (targetValue != 0) {
+            blockedCells.add(cellKey);
+          }
           return;
         }
+        checkCell(y, x - 1);
       }
-      rotatedBoard[i][0] += curValue;
+
+      checkCell(i, j - 1);
     }, minX: 1);
     boardData = getUnrotatedBoard(rotatedBoard, direction);
     printBoard(boardData);
