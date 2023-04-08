@@ -30,7 +30,11 @@ class _GamePageState extends State<GamePage> {
           onDirection: game.move,
           child: Column(
             children: [
-              Expanded(child: GameBoard()),
+              Expanded(
+                  child: GameBoard(
+                boardWidth: game.boardWidth,
+                boardHeight: game.boardHeight,
+              )),
               const GameMoveButtons(),
             ],
           ),

@@ -28,6 +28,12 @@ class Game extends ChangeNotifier {
     return boardData[y][x];
   }
 
+  String getCellText({required int x, required int y}) {
+    int value = getCellValue(x: x, y: y);
+    if (value == 0) return '';
+    return '${boardData[y][x]}';
+  }
+
   setCellValue({required int x, required int y, required int value}) {
     boardData[y][x] = value;
   }
