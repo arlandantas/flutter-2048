@@ -5,13 +5,13 @@ class GameBoard extends StatefulWidget {
   GameBoard({super.key, int boardWidth = 4, int boardHeight = 4}) : boardData = List<List<int>>.filled(boardHeight, List.filled(boardWidth, 0));
 
   @override
-  State<GameBoard> createState() => _GamePageState();
+  State<GameBoard> createState() => _GameBoardsState();
 }
 
 const double cellsMargin = 5;
 const double cellsRadius = 5;
 
-class _GamePageState extends State<GameBoard> {
+class _GameBoardsState extends State<GameBoard> {
   @override
   Widget build(BuildContext context) {
     return Container(
