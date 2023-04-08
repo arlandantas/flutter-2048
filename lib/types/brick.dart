@@ -1,6 +1,6 @@
 class Brick {
-  final int x;
-  final int y;
+  final double x;
+  final double y;
   final int value;
   Brick({
     required this.x,

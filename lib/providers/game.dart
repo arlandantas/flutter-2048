@@ -201,7 +201,11 @@ class Game extends ChangeNotifier {
     walkToBoard((x, y) {
       int value = boardData[y][x];
       if (value != 0) {
-        bricks.add(Brick(x: x, y: y, value: value));
+        bricks.add(Brick(
+          x: x.toDouble(),
+          y: y.toDouble(),
+          value: value,
+        ));
       }
     });
   }

@@ -22,9 +22,6 @@ class _GamePageState extends State<GamePage> {
     print("Rebuild game page");
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
       body: ChangeNotifierProvider(
         create: (context) => game,
         child: ArrowDetect(
