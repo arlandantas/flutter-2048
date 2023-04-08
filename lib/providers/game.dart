@@ -1,13 +1,20 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/widgets.dart';
-import 'package:flutter2048/helpers/directions.dart';
+import 'package:flutter2048/types/cell_move.dart';
+import 'package:flutter2048/types/directions.dart';
+import 'package:flutter2048/types/position.dart';
+
+const Duration movingDelay = Duration(milliseconds: 200);
 
 class Game extends ChangeNotifier {
   final Random random = Random();
   int maxExponent = 1;
   int minExponent = 1;
   int filledNumbers = 0;
+  bool moving = false;
+  Set<CellMove> pendingMoves = {};
   final int boardWidth;
   final int boardHeight;
   late List<List<int>> boardData;
@@ -54,7 +61,7 @@ class Game extends ChangeNotifier {
       y = random.nextInt(boardHeight);
     } while (getCellValue(x: x, y: y) != 0);
     int value = maxExponent != minExponent ? (minExponent + random.nextInt(maxExponent - minExponent)) : minExponent;
-    boardData[y][x] = value;
+    boardData[y][x] = pow(2, value).toInt();
     ++filledNumbers;
   }
 
@@ -101,26 +108,45 @@ class Game extends ChangeNotifier {
     }
   }
 
+  resetPendingMoves() {
+    pendingMoves = {};
+    notifyListeners();
+  }
+
   move(Directions direction) {
+    if (moving) return;
+
     print("Moving to $direction");
+    moving = true;
     var rotatedBoard = getRotatedBoard(boardData, direction);
-    Set<String> blockedCells = {};
+    Set<Position> blockedCells = {};
+    bool anyMove = false;
     walkToBoard((i, j) {
       final int originValue = rotatedBoard[i][j] + 0;
       if (originValue == 0) return;
 
-      rotatedBoard[i][j] = 0;
+      registryMove(Position origin, Position target) {
+        if (origin.isSame(target)) return;
+        int finalValue = rotatedBoard[origin.y][origin.x] + rotatedBoard[target.y][target.x];
+
+        rotatedBoard[origin.y][origin.x] = 0;
+        rotatedBoard[target.y][target.x] = finalValue;
+        pendingMoves.add(CellMove(origin: origin, target: target, finalValue: finalValue));
+        anyMove = true;
+      }
+
+      Position originPosition = Position(x: j, y: i);
       checkCell(int y, int x) {
         int targetValue = rotatedBoard[y][x];
         if (targetValue != 0 || x == 0) {
-          String cellKey = '$y$x';
-          if (blockedCells.contains(cellKey) || (targetValue != 0 && targetValue != originValue)) {
-            rotatedBoard[y][x + 1] += originValue;
+          Position targetPosition = Position(x: x, y: y);
+          if (blockedCells.contains(targetPosition) || (targetValue != 0 && targetValue != originValue)) {
+            registryMove(originPosition, Position(x: x + 1, y: y));
             return;
           }
-          rotatedBoard[y][x] += originValue;
+          registryMove(originPosition, Position(x: x, y: y));
           if (targetValue != 0) {
-            blockedCells.add(cellKey);
+            blockedCells.add(targetPosition);
           }
           return;
         }
@@ -130,7 +156,10 @@ class Game extends ChangeNotifier {
       checkCell(i, j - 1);
     }, minX: 1);
     boardData = getUnrotatedBoard(rotatedBoard, direction);
-    addNumber();
+    if (anyMove) addNumber();
     notifyListeners();
+    Timer(movingDelay, () {
+      moving = false;
+    });
   }
 }

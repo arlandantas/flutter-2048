@@ -15,10 +15,12 @@ class GamePage extends StatefulWidget {
 }
 
 class _GamePageState extends State<GamePage> {
-  Game game = Game();
+  final Game game = Game();
 
   @override
   Widget build(BuildContext context) {
+    print("Rebuild game page");
+
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
@@ -29,13 +31,14 @@ class _GamePageState extends State<GamePage> {
           autofocus: true,
           onDirection: game.move,
           child: Column(
-            children: [
+            children: const [
               Expanded(
-                  child: GameBoard(
-                boardWidth: game.boardWidth,
-                boardHeight: game.boardHeight,
-              )),
-              const GameMoveButtons(),
+                child: GameBoard(
+                  boardWidth: 4,
+                  boardHeight: 4,
+                ),
+              ),
+              GameMoveButtons(),
             ],
           ),
         ),

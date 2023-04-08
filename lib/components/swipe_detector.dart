@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter2048/helpers/directions.dart';
+import 'package:flutter2048/types/directions.dart';
 
 class SwipeDetector extends StatelessWidget {
   const SwipeDetector({super.key, required this.child, this.sensitivity = 10});

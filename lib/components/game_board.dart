@@ -2,26 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter2048/providers/game.dart';
 import 'package:provider/provider.dart';
 
-class GameBoard extends StatefulWidget {
+const double cellsMargin = 5;
+const double cellsRadius = 5;
+
+class GameBoard extends StatelessWidget {
   final int boardWidth;
   final int boardHeight;
   const GameBoard({super.key, this.boardWidth = 4, this.boardHeight = 4});
 
   @override
-  State<GameBoard> createState() => _GameBoardsState();
-}
-
-const double cellsMargin = 5;
-const double cellsRadius = 5;
-
-class _GameBoardsState extends State<GameBoard> {
-  @override
   Widget build(BuildContext context) {
+    print("Re-rendering Board");
+
     return Stack(
       children: [
         BoardGrid(
-          boardHeight: widget.boardHeight,
-          boardWidth: widget.boardWidth,
+          boardHeight: boardHeight,
+          boardWidth: boardWidth,
         ),
         // Positioned.fromRect(
         //   rect: Rect.fromPoints(const Offset(20, 20), const Offset(50, 50)),
@@ -44,6 +41,8 @@ class BoardGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print("Re-rendering Grid");
+
     return Container(
       margin: const EdgeInsets.all(cellsMargin),
       child: Column(
@@ -69,6 +68,8 @@ class BoardCell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print("Re-rendering Cell $y $x");
+
     return Expanded(
       key: Key('Cell$y$x'),
       child: Container(
@@ -78,6 +79,7 @@ class BoardCell extends StatelessWidget {
           border: Border.all(color: Colors.black26),
         ),
         alignment: Alignment.center,
+        // child: const Text('AOBA'),
         child: Consumer<Game>(
           builder: (c, game, h) => Text(
             game.getCellText(x: x, y: y),

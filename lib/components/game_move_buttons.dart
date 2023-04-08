@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter2048/helpers/directions.dart';
+import 'package:flutter2048/types/directions.dart';
 import 'package:flutter2048/providers/game.dart';
 import 'package:provider/provider.dart';
 

@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter2048/components/game_board.dart';
 import 'package:flutter2048/components/game_move_buttons.dart';
-import 'package:flutter2048/helpers/directions.dart';
+import 'package:flutter2048/types/directions.dart';
 
 class ArrowDetect extends StatefulWidget {
   const ArrowDetect({
@@ -109,12 +109,7 @@ class _ArrowDetectState extends State<ArrowDetect> {
         });
         return KeyEventResult.handled;
       },
-      child: Column(
-        children: [
-          Expanded(child: GameBoard()),
-          const GameMoveButtons(),
-        ],
-      ),
+      child: widget.child,
     );
   }
 }
