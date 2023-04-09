@@ -2,119 +2,85 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter2048/components/brick_widget.dart';
+import 'package:flutter2048/helpers/board_mixin.dart';
 import 'package:flutter2048/providers/game.dart';
 import 'package:flutter2048/types/brick_move.dart';
+import 'package:flutter2048/types/position.dart';
 import 'package:provider/provider.dart';
 
-class MovingBrick extends StatefulWidget {
+class MovingBrick extends StatelessWidget {
   final BrickMove brickMove;
   final Size size;
+  final Duration moveDuration;
   const MovingBrick({
     super.key,
     required this.brickMove,
     required this.size,
+    this.moveDuration = const Duration(milliseconds: 500),
   });
-
-  static const brickMoveDelay = 500;
-
-  @override
-  State<MovingBrick> createState() => _MovingBricksState();
-}
-
-class _MovingBricksState extends State<MovingBrick> {
-  late int value;
-  List<Timer> timers = [];
-  int moveDuration = 500;
-  Color color = Colors.blue;
-  bool moving = true;
-  int boardWidth = 4, boardHeight = 4;
-
-  @override
-  void initState() {
-    super.initState();
-    setState(() {
-      value = widget.brickMove.startValue;
-      moving = true;
-      timers.add(Timer(
-        Duration(milliseconds: moveDuration),
-        () {
-          print("Timer finished");
-          setState(() {
-            moving = false;
-            value = widget.brickMove.finalValue;
-            color = Colors.amber;
-          });
-        },
-      ));
-    });
-  }
-
-  @override
-  void dispose() {
-    print("disposing...");
-    setState(() {
-      for (Timer timer in timers) {
-        timer.cancel();
-      }
-      timers = [];
-    });
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
-    print("Rebuilding moving brick $value $color");
+    print("Rebuilding moving brick");
 
-    if (moving) {
-      if (widget.brickMove.origin.x == widget.brickMove.target.x) {
-        return TweenAnimationBuilder(
-          tween: Tween<double>(
-            begin: widget.brickMove.origin.y.toDouble(),
-            end: widget.brickMove.target.y.toDouble(),
-          ),
-          duration: Duration(milliseconds: moveDuration),
-          builder: (_, y, __) => BrickWidget(
-            boardHeight: boardHeight,
-            boardWidth: boardWidth,
-            x: widget.brickMove.target.x.toDouble(),
-            y: y,
-            value: value,
-            size: widget.size,
-            animationDuration: moveDuration,
-            color: color,
-          ),
-        );
-      }
+    Game game = Provider.of<Game>(context);
+
+    animator<T>({
+      required T start,
+      required T end,
+      required Widget Function(T currentValue) builder,
+    }) {
       return TweenAnimationBuilder(
-        tween: Tween<double>(
-          begin: widget.brickMove.origin.x.toDouble(),
-          end: widget.brickMove.target.x.toDouble(),
+        tween: Tween<T>(
+          begin: start,
+          end: end,
         ),
-        duration: Duration(milliseconds: moveDuration),
-        builder: (_, x, __) => BrickWidget(
-          boardHeight: boardHeight,
-          boardWidth: boardWidth,
-          y: widget.brickMove.target.y.toDouble(),
-          x: x,
-          value: value,
-          size: widget.size,
-          animationDuration: moveDuration,
-          color: color,
-        ),
+        duration: moveDuration,
+        builder: (_, currentValue, __) => builder(currentValue),
       );
     }
 
-    print("Move finished");
-
-    return BrickWidget(
-      boardHeight: boardHeight,
-      boardWidth: boardWidth,
-      x: widget.brickMove.target.x.toDouble(),
-      y: widget.brickMove.target.y.toDouble(),
-      value: value,
-      size: widget.size,
-      animationDuration: 0,
-      color: color,
+    return animator(
+      start: brickMove.origin.y.toDouble(),
+      end: brickMove.target.y.toDouble(),
+      builder: (y) => animator(
+        start: brickMove.origin.x.toDouble(),
+        end: brickMove.target.x.toDouble(),
+        builder: (x) => animator(
+          start: brickMove.startValue.toDouble(),
+          end: brickMove.finalValue.toDouble(),
+          builder: (value) => TweenAnimationBuilder(
+            tween: ColorTween(
+              begin: BoardMixin.getColor(brickMove.startValue),
+              end: BoardMixin.getColor(brickMove.finalValue),
+            ),
+            duration: moveDuration,
+            builder: (_, color, __) => BrickWidget(
+              boardHeight: game.boardHeight,
+              boardWidth: game.boardWidth,
+              y: y,
+              x: x,
+              value: value.toInt(),
+              size: size,
+              color: color,
+            ),
+          ),
+        ),
+      ),
     );
+
+    // builder: (x) => animator(
+    //       start: brickMove.startValue,
+    //       end: brickMove.finalValue,
+    //       builder: (value) => BrickWidget(
+    //         boardHeight: game.boardHeight,
+    //         boardWidth: game.boardWidth,
+    //         y: y,
+    //         x: x,
+    //         value: value,
+    //         size: size,
+    //         color: Colors.blue,
+    //       ),
+    //     ),
   }
 }

@@ -19,8 +19,6 @@ class _GamePageState extends State<GamePage> {
 
   @override
   Widget build(BuildContext context) {
-    print("Rebuild game page");
-
     Size size = MediaQuery.of(context).size;
     bool isLandscape = size.width > size.height;
     double width = isLandscape ? (size.height - 80) : size.width;

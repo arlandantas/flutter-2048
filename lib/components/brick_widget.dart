@@ -1,31 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:flutter2048/components/game_board.dart';
-import 'package:flutter2048/helpers/position_helper.dart';
+import 'package:flutter2048/helpers/board_mixin.dart';
 
 class BrickWidget extends StatelessWidget {
   final int boardWidth;
   final int boardHeight;
   final double x;
   final double y;
-  final int value;
+  final int? value;
+  final String? label;
   final Size size;
   final int animationDuration;
-  final Color color;
+  final Color? color;
   const BrickWidget({
     super.key,
     required this.boardHeight,
     required this.boardWidth,
     required this.x,
     required this.y,
-    required this.value,
+    this.value,
+    this.label,
     required this.size,
     this.animationDuration = 0,
-    this.color = Colors.white,
+    this.color,
   });
 
   @override
   Widget build(BuildContext context) {
-    Rect positionRect = PositionHelper.getBrickRect(
+    Rect positionRect = BoardMixin.getBrickRect(
       x: x,
       y: y,
       boardHeight: boardHeight,
@@ -36,7 +38,7 @@ class BrickWidget extends StatelessWidget {
       rect: positionRect,
       child: Container(
         decoration: BoxDecoration(
-            color: color,
+            color: color ?? BoardMixin.getColor(value ?? 0),
             border: Border.all(
               color: Colors.black12,
               width: 1,
@@ -54,7 +56,7 @@ class BrickWidget extends StatelessWidget {
             ]),
         alignment: Alignment.center,
         child: Text(
-          '$value',
+          label ?? '$value',
           style: const TextStyle(
             color: Colors.black87,
             fontSize: 20,

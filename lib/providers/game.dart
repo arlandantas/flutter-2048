@@ -130,7 +130,6 @@ class Game extends ChangeNotifier {
     pendingMoves = {};
     moving = false;
     notifyListeners();
-    print("Moves reseted");
   }
 
   move(Directions direction) {

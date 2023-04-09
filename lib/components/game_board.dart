@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter2048/components/game_bricks.dart';
-import 'package:flutter2048/helpers/position_helper.dart';
+import 'package:flutter2048/helpers/board_mixin.dart';
 import 'package:flutter2048/providers/game.dart';
 import 'package:provider/provider.dart';
 
@@ -11,8 +11,6 @@ class GameBoard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print("Re-rendering Board");
-
     return Stack(
       children: const [
         BoardGrid(),
@@ -27,8 +25,6 @@ class BoardGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print("Re-rendering Grid");
-
     Game game = Provider.of<Game>(context);
 
     return LayoutBuilder(
@@ -70,7 +66,7 @@ class BoardCell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Positioned.fromRect(
-      rect: PositionHelper.getBrickRect(
+      rect: BoardMixin.getBrickRect(
         x: x.toDouble(),
         y: y.toDouble(),
         parentSize: size,
