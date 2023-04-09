@@ -7,7 +7,7 @@ import 'package:flutter2048/types/brick_move.dart';
 import 'package:flutter2048/types/directions.dart';
 import 'package:flutter2048/types/position.dart';
 
-const Duration movingDelay = Duration(milliseconds: 2000);
+const Duration movingDelay = Duration(milliseconds: 300);
 
 class Game extends ChangeNotifier {
   final Random random = Random();
@@ -30,7 +30,7 @@ class Game extends ChangeNotifier {
       ),
     );
     cellsQty = boardHeight * boardWidth;
-    for (var i = 0; i < 1; i++) {
+    for (var i = 0; i < 5; i++) {
       addNumber();
     }
     updateBricks();
@@ -192,7 +192,7 @@ class Game extends ChangeNotifier {
           ),
         )
         .toSet();
-    // if (anyMove) addNumber();
+    if (anyMove) addNumber();
     updateBricks();
     notifyListeners();
   }

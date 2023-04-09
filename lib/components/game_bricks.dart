@@ -59,28 +59,38 @@ class _GameBricksState extends State<GameBricks> {
 
         List<Widget> children = [];
         for (Brick brick in bricks) {
-          try {
-            BrickMove move = currentMoves.firstWhere(
-              (move) => move.target.x == brick.x && move.target.y == brick.y,
-            );
-            print("$brick -> $move");
-            children.add(MovingBrick(
-              brickMove: move,
+          // try {
+          //   BrickMove move = currentMoves.firstWhere(
+          //     (move) => move.target.x == brick.x && move.target.y == brick.y,
+          //   );
+          //   print("$brick -> $move");
+          //   children.add(MovingBrick(
+          //     brickMove: move,
+          //     size: size,
+          //   ));
+          // } catch (e) {
+          //   children.insert(
+          //     0,
+          //     BrickWidget(
+          //       boardHeight: boardHeight,
+          //       boardWidth: boardWidth,
+          //       x: brick.x,
+          //       y: brick.y,
+          //       value: brick.value,
+          //       size: size,
+          //     ),
+          //   );
+          // }
+          children.add(
+            BrickWidget(
+              boardHeight: boardHeight,
+              boardWidth: boardWidth,
+              x: brick.x,
+              y: brick.y,
+              value: brick.value,
               size: size,
-            ));
-          } catch (e) {
-            children.insert(
-              0,
-              BrickWidget(
-                boardHeight: boardHeight,
-                boardWidth: boardWidth,
-                x: brick.x,
-                y: brick.y,
-                value: brick.value,
-                size: size,
-              ),
-            );
-          }
+            ),
+          );
         }
 
         return Stack(children: children.toList());
