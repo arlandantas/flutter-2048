@@ -30,10 +30,7 @@ class _GamePageState extends State<GamePage> {
           child: Column(
             children: const [
               Expanded(
-                child: GameBoard(
-                  boardWidth: 4,
-                  boardHeight: 4,
-                ),
+                child: GameBoard(),
               ),
               GameMoveButtons(),
             ],

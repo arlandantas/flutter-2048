@@ -7,47 +7,39 @@ const double cellsMargin = 5;
 const double cellsRadius = 10;
 
 class GameBoard extends StatelessWidget {
-  final int boardWidth;
-  final int boardHeight;
-  const GameBoard({super.key, this.boardWidth = 4, this.boardHeight = 4});
+  const GameBoard({super.key});
 
   @override
   Widget build(BuildContext context) {
     print("Re-rendering Board");
 
     return Stack(
-      children: [
-        BoardGrid(
-          boardHeight: boardHeight,
-          boardWidth: boardWidth,
-        ),
-        GameBricks(
-          boardHeight: boardHeight,
-          boardWidth: boardWidth,
-        ),
+      children: const [
+        BoardGrid(),
+        GameBricks(),
       ],
     );
   }
 }
 
 class BoardGrid extends StatelessWidget {
-  final int boardWidth;
-  final int boardHeight;
-  const BoardGrid({super.key, this.boardWidth = 4, this.boardHeight = 4});
+  const BoardGrid({super.key});
 
   @override
   Widget build(BuildContext context) {
     print("Re-rendering Grid");
 
+    Game game = Provider.of<Game>(context);
+
     return Container(
       margin: const EdgeInsets.all(cellsMargin),
       child: Column(
         children: List<Widget>.generate(
-          boardHeight,
+          game.boardHeight,
           (y) => Expanded(
               child: Row(
             children: List<Widget>.generate(
-              boardWidth,
+              game.boardWidth,
               (x) => BoardCell(x: x, y: y),
             ),
           )),

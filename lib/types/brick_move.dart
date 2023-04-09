@@ -1,12 +1,14 @@
 import 'package:flutter2048/types/position.dart';
 
-class CellMove {
+class BrickMove {
   final Position origin;
   final Position target;
+  final int startValue;
   final int finalValue;
-  CellMove({
+  BrickMove({
     required this.origin,
     required this.target,
+    required this.startValue,
     required this.finalValue,
   });
 }

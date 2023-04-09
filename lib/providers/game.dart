@@ -3,11 +3,11 @@ import 'dart:math';
 
 import 'package:flutter/widgets.dart';
 import 'package:flutter2048/types/brick.dart';
-import 'package:flutter2048/types/cell_move.dart';
+import 'package:flutter2048/types/brick_move.dart';
 import 'package:flutter2048/types/directions.dart';
 import 'package:flutter2048/types/position.dart';
 
-const Duration movingDelay = Duration(milliseconds: 200);
+const Duration movingDelay = Duration(milliseconds: 2000);
 
 class Game extends ChangeNotifier {
   final Random random = Random();
@@ -15,7 +15,7 @@ class Game extends ChangeNotifier {
   int minExponent = 1;
   int filledNumbers = 0;
   bool moving = false;
-  Set<CellMove> pendingMoves = {};
+  Set<BrickMove> pendingMoves = {};
   Set<Brick> bricks = {};
   final int boardWidth;
   final int boardHeight;
@@ -30,7 +30,7 @@ class Game extends ChangeNotifier {
       ),
     );
     cellsQty = boardHeight * boardWidth;
-    for (var i = 0; i < 5; i++) {
+    for (var i = 0; i < 1; i++) {
       addNumber();
     }
     updateBricks();
@@ -128,7 +128,9 @@ class Game extends ChangeNotifier {
 
   resetPendingMoves() {
     pendingMoves = {};
+    moving = false;
     notifyListeners();
+    print("Moves reseted");
   }
 
   move(Directions direction) {
@@ -139,7 +141,7 @@ class Game extends ChangeNotifier {
     var rotatedBoard = getRotatedBoard(boardData, direction);
     Set<Position> blockedCells = {};
     bool anyMove = false;
-    Set<CellMove> rotatedPendingMoves = {};
+    Set<BrickMove> rotatedPendingMoves = {};
     walkToBoard((i, j) {
       final int originValue = rotatedBoard[i][j] + 0;
       if (originValue == 0) return;
@@ -150,9 +152,10 @@ class Game extends ChangeNotifier {
 
         rotatedBoard[origin.y][origin.x] = 0;
         rotatedBoard[target.y][target.x] = finalValue;
-        rotatedPendingMoves.add(CellMove(
+        rotatedPendingMoves.add(BrickMove(
           origin: origin,
           target: target,
+          startValue: originValue,
           finalValue: finalValue,
         ));
         anyMove = true;
@@ -181,19 +184,17 @@ class Game extends ChangeNotifier {
     boardData = getUnrotatedBoard(rotatedBoard, direction);
     pendingMoves = rotatedPendingMoves
         .map(
-          (e) => CellMove(
+          (e) => BrickMove(
             origin: getRotatedPosition(e.origin, direction),
             target: getRotatedPosition(e.target, direction),
+            startValue: e.startValue,
             finalValue: e.finalValue,
           ),
         )
         .toSet();
-    if (anyMove) addNumber();
+    // if (anyMove) addNumber();
     updateBricks();
     notifyListeners();
-    Timer(movingDelay, () {
-      moving = false;
-    });
   }
 
   updateBricks() {

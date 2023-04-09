@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 
 class GameMoveButtons extends StatelessWidget {
   const GameMoveButtons({super.key});
+  static const double buttonHeight = 80;
 
   moveBoard(BuildContext context, Directions direction) {
     return Provider.of<Game>(context, listen: false).move(direction);
@@ -18,7 +19,7 @@ class GameMoveButtons extends StatelessWidget {
         Expanded(
           child: MaterialButton(
             onPressed: () => moveBoard(context, Directions.down),
-            height: 80,
+            height: buttonHeight,
             child: const Icon(Icons.keyboard_arrow_down),
           ),
         ),
