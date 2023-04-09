@@ -8,7 +8,8 @@ class GameMoveButtons extends StatelessWidget {
   static const double buttonHeight = 80;
 
   moveBoard(BuildContext context, Directions direction) {
-    return Provider.of<Game>(context, listen: false).move(direction);
+    Game game = Provider.of<Game>(context, listen: false);
+    game.move(direction);
   }
 
   @override

@@ -49,6 +49,7 @@ class _GameBricksState extends State<GameBricks> {
 
   gameUpdated(BuildContext context) {
     Game game = context.read<Game>();
+    print("Bricks widget updated");
     setState(() {
       boardWidth = game.boardWidth;
       boardHeight = game.boardHeight;
@@ -56,7 +57,11 @@ class _GameBricksState extends State<GameBricks> {
       if (game.pendingMoves.isNotEmpty) {
         currentMoves = game.pendingMoves.toList();
         currentStatus = BrickBoardStates.moving;
-        Timer(brickMoveDuration, game.resetPendingMoves);
+        Timer(brickMoveDuration, () {
+          Game game = context.read<Game>();
+          print("brick reseting moves");
+          game.resetPendingMoves;
+        });
       } else {
         currentMoves = [];
         currentStatus = BrickBoardStates.static;

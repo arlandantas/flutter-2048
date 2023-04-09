@@ -21,8 +21,6 @@ class MovingBrick extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print("Rebuilding moving brick");
-
     Game game = Provider.of<Game>(context);
 
     animator<T>({
@@ -35,6 +33,7 @@ class MovingBrick extends StatelessWidget {
           begin: start,
           end: end,
         ),
+        curve: Curves.easeOutQuart,
         duration: moveDuration,
         builder: (_, currentValue, __) => builder(currentValue),
       );
