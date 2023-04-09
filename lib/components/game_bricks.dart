@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter2048/components/brick_widget.dart';
-import 'package:flutter2048/components/moving_brick.dart';
 import 'package:flutter2048/providers/game.dart';
 import 'package:flutter2048/types/brick.dart';
 import 'package:flutter2048/types/brick_move.dart';
@@ -31,22 +30,30 @@ class _GameBricksState extends State<GameBricks> {
     gameUpdated(context);
   }
 
+  @override
+  void dispose() {
+    Provider.of<Game>(context, listen: false).removeListener(
+      () => gameUpdated(context),
+    );
+    super.dispose();
+  }
+
   gameUpdated(BuildContext context) {
     Game game = context.read<Game>();
     setState(() {
       bricks = game.bricks.toList();
       boardWidth = game.boardWidth;
       boardHeight = game.boardHeight;
+
+      if (game.pendingMoves.isNotEmpty) {
+        setState(() {
+          currentMoves = game.pendingMoves.toList();
+        });
+
+        print("Updated: ${game.pendingMoves}");
+        Timer(movingDelay, game.resetPendingMoves);
+      }
     });
-
-    if (game.pendingMoves.isEmpty) return;
-
-    setState(() {
-      currentMoves = game.pendingMoves.toList();
-    });
-
-    print("Updated: ${game.pendingMoves}");
-    Timer(movingDelay, game.resetPendingMoves);
   }
 
   @override

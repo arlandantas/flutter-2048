@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter2048/components/game_bricks.dart';
+import 'package:flutter2048/helpers/position_helper.dart';
 import 'package:flutter2048/providers/game.dart';
 import 'package:provider/provider.dart';
 
-const double cellsMargin = 5;
 const double cellsRadius = 10;
 
 class GameBoard extends StatelessWidget {
@@ -31,20 +31,22 @@ class BoardGrid extends StatelessWidget {
 
     Game game = Provider.of<Game>(context);
 
-    return Container(
-      margin: const EdgeInsets.all(cellsMargin),
-      child: Column(
-        children: List<Widget>.generate(
-          game.boardHeight,
-          (y) => Expanded(
-              child: Row(
-            children: List<Widget>.generate(
-              game.boardWidth,
-              (x) => BoardCell(x: x, y: y),
-            ),
-          )),
-        ),
-      ),
+    return LayoutBuilder(
+      builder: (ctx, constraints) {
+        List<Widget> children = [];
+        for (var y = 0; y < game.boardHeight; y++) {
+          for (var x = 0; x < game.boardWidth; x++) {
+            children.add(BoardCell(
+              x: x,
+              y: y,
+              size: constraints.biggest,
+              boardHeight: game.boardHeight,
+              boardWidth: game.boardWidth,
+            ));
+          }
+        }
+        return Stack(children: children);
+      },
     );
   }
 }
@@ -52,14 +54,31 @@ class BoardGrid extends StatelessWidget {
 class BoardCell extends StatelessWidget {
   final int x;
   final int y;
-  const BoardCell({super.key, required this.x, required this.y});
+  final Size size;
+  final int boardWidth;
+  final int boardHeight;
+
+  const BoardCell({
+    super.key,
+    required this.x,
+    required this.y,
+    required this.size,
+    required this.boardHeight,
+    required this.boardWidth,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
+    return Positioned.fromRect(
+      rect: PositionHelper.getBrickRect(
+        x: x.toDouble(),
+        y: y.toDouble(),
+        parentSize: size,
+        boardWidth: boardWidth,
+        boardHeight: boardHeight,
+      ),
       key: Key('Cell$y$x'),
       child: Container(
-        margin: const EdgeInsets.all(cellsMargin),
         decoration: BoxDecoration(
           borderRadius: const BorderRadius.all(Radius.circular(cellsRadius)),
           border: Border.all(color: Colors.black12),

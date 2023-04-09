@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter2048/components/game_board.dart';
 import 'package:flutter2048/helpers/position_helper.dart';
 
 class BrickWidget extends StatelessWidget {
@@ -40,7 +41,9 @@ class BrickWidget extends StatelessWidget {
               color: Colors.black12,
               width: 1,
             ),
-            borderRadius: const BorderRadius.all(Radius.circular(10)),
+            borderRadius: const BorderRadius.all(
+              Radius.circular(cellsRadius),
+            ),
             boxShadow: const [
               BoxShadow(
                 color: Colors.black38,

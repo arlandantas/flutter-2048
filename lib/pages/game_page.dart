@@ -21,19 +21,31 @@ class _GamePageState extends State<GamePage> {
   Widget build(BuildContext context) {
     print("Rebuild game page");
 
+    Size size = MediaQuery.of(context).size;
+    bool isLandscape = size.width > size.height;
+    double width = isLandscape ? (size.height - 80) : size.width;
+
     return Scaffold(
-      body: ChangeNotifierProvider(
-        create: (context) => game,
-        child: ArrowDetect(
-          autofocus: true,
-          onDirection: game.move,
-          child: Column(
-            children: const [
-              Expanded(
-                child: GameBoard(),
+      body: Container(
+        alignment: Alignment.center,
+        child: SizedBox.fromSize(
+          size: Size(width, size.height),
+          child: ChangeNotifierProvider(
+            create: (context) => game,
+            child: ArrowDetect(
+              autofocus: true,
+              onDirection: game.move,
+              child: Column(
+                children: const [
+                  Expanded(
+                    child: SizedBox.square(
+                      child: GameBoard(),
+                    ),
+                  ),
+                  GameMoveButtons(),
+                ],
               ),
-              GameMoveButtons(),
-            ],
+            ),
           ),
         ),
       ),
