@@ -56,10 +56,12 @@ class _GameBricksState extends State<GameBricks> {
       if (game.pendingMoves.isNotEmpty) {
         currentMoves = game.pendingMoves.toList();
         currentStatus = BrickBoardStates.moving;
-        Timer(brickMoveDuration, () {
-          Game game = context.read<Game>();
-          game.resetPendingMoves();
-        });
+        Timer(
+          Duration(milliseconds: brickMoveDuration.inMilliseconds + 100),
+          () {
+            Provider.of<Game>(context, listen: false).resetPendingMoves();
+          },
+        );
       } else {
         currentMoves = [];
         currentStatus = BrickBoardStates.static;

@@ -27,21 +27,21 @@ class GameMoveButtons extends StatelessWidget {
         Expanded(
           child: MaterialButton(
             onPressed: () => moveBoard(context, Directions.up),
-            height: 80,
+            height: buttonHeight,
             child: const Icon(Icons.keyboard_arrow_up),
           ),
         ),
         Expanded(
           child: MaterialButton(
             onPressed: () => moveBoard(context, Directions.left),
-            height: 80,
+            height: buttonHeight,
             child: const Icon(Icons.keyboard_arrow_left),
           ),
         ),
         Expanded(
           child: MaterialButton(
             onPressed: () => moveBoard(context, Directions.right),
-            height: 80,
+            height: buttonHeight,
             child: const Icon(Icons.keyboard_arrow_right),
           ),
         ),

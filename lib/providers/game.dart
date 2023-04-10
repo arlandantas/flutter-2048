@@ -14,6 +14,7 @@ class Game extends ChangeNotifier {
   int maxExponent = 1;
   int minExponent = 1;
   int filledNumbers = 0;
+  int maxValue = 2;
   bool moving = false;
   Set<BrickMove> pendingMoves = {};
   Set<Brick> bricks = {};
@@ -30,9 +31,17 @@ class Game extends ChangeNotifier {
       ),
     );
     cellsQty = boardHeight * boardWidth;
-    for (var i = 0; i < 5; i++) {
+    start();
+  }
+
+  start() {
+    walkToBoard((y, x) {
+      boardData[y][x] = 0;
+    });
+    for (var i = 0; i < 3; i++) {
       addNumber();
     }
+    moving = false;
     updateBricks();
     notifyListeners();
   }
@@ -45,10 +54,6 @@ class Game extends ChangeNotifier {
     int value = getCellValue(x: x, y: y);
     if (value == 0) return '';
     return '$value';
-  }
-
-  setCellValue({required int x, required int y, required int value}) {
-    boardData[y][x] = value;
   }
 
   addNumber() {
@@ -140,38 +145,50 @@ class Game extends ChangeNotifier {
     Set<Position> blockedCells = {};
     bool anyMove = false;
     Set<BrickMove> rotatedPendingMoves = {};
+
+    registryMove(Position origin, Position target) {
+      if (origin.isSame(target)) return;
+      int targetValue = rotatedBoard[target.y][target.x];
+      int originValue = rotatedBoard[origin.y][origin.x];
+      int finalValue = originValue + targetValue;
+
+      if (finalValue > maxValue) {
+        maxValue = finalValue;
+      }
+      if (targetValue > 0) {
+        blockedCells.add(target);
+      }
+
+      rotatedBoard[origin.y][origin.x] = 0;
+      rotatedBoard[target.y][target.x] = finalValue;
+      rotatedPendingMoves.add(BrickMove(
+        origin: origin,
+        target: target,
+        startValue: originValue,
+        finalValue: finalValue,
+      ));
+      anyMove = true;
+    }
+
+    isBlocked(Position position) {
+      return blockedCells.any((element) => element.x == position.x && element.y == position.y);
+    }
+
     walkToBoard((i, j) {
       final int originValue = rotatedBoard[i][j] + 0;
       if (originValue == 0) return;
-
-      registryMove(Position origin, Position target) {
-        if (origin.isSame(target)) return;
-        int finalValue = rotatedBoard[origin.y][origin.x] + rotatedBoard[target.y][target.x];
-
-        rotatedBoard[origin.y][origin.x] = 0;
-        rotatedBoard[target.y][target.x] = finalValue;
-        rotatedPendingMoves.add(BrickMove(
-          origin: origin,
-          target: target,
-          startValue: originValue,
-          finalValue: finalValue,
-        ));
-        anyMove = true;
-      }
 
       Position originPosition = Position(x: j, y: i);
       checkCell(int y, int x) {
         int targetValue = rotatedBoard[y][x];
         if (targetValue != 0 || x == 0) {
           Position targetPosition = Position(x: x, y: y);
-          if (blockedCells.contains(targetPosition) || (targetValue != 0 && targetValue != originValue)) {
+          bool differentValue = targetValue != 0 && targetValue != originValue;
+          if (isBlocked(targetPosition) || differentValue) {
             registryMove(originPosition, Position(x: x + 1, y: y));
             return;
           }
           registryMove(originPosition, Position(x: x, y: y));
-          if (targetValue != 0) {
-            blockedCells.add(targetPosition);
-          }
           return;
         }
         checkCell(y, x - 1);

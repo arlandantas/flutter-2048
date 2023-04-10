@@ -34,13 +34,22 @@ class _GamePageState extends State<GamePage> {
               autofocus: true,
               onDirection: game.move,
               child: Column(
-                children: const [
-                  Expanded(
-                    child: SizedBox.square(
-                      child: GameBoard(),
-                    ),
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: MaterialButton(
+                          onPressed: game.start,
+                          height: 80,
+                          child: const Text('NEW GAME'),
+                        ),
+                      ),
+                    ],
                   ),
-                  GameMoveButtons(),
+                  const Expanded(
+                    child: GameBoard(),
+                  ),
+                  const GameMoveButtons(),
                 ],
               ),
             ),

@@ -5,7 +5,6 @@ import 'package:flutter2048/components/brick_widget.dart';
 import 'package:flutter2048/helpers/board_mixin.dart';
 import 'package:flutter2048/providers/game.dart';
 import 'package:flutter2048/types/brick_move.dart';
-import 'package:flutter2048/types/position.dart';
 import 'package:provider/provider.dart';
 
 class MovingBrick extends StatelessWidget {
@@ -67,19 +66,5 @@ class MovingBrick extends StatelessWidget {
         ),
       ),
     );
-
-    // builder: (x) => animator(
-    //       start: brickMove.startValue,
-    //       end: brickMove.finalValue,
-    //       builder: (value) => BrickWidget(
-    //         boardHeight: game.boardHeight,
-    //         boardWidth: game.boardWidth,
-    //         y: y,
-    //         x: x,
-    //         value: value,
-    //         size: size,
-    //         color: Colors.blue,
-    //       ),
-    //     ),
   }
 }
