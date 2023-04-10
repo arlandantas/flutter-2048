@@ -127,21 +127,14 @@ class Game extends ChangeNotifier {
   }
 
   resetPendingMoves() {
-    print("Resetted moves 1");
     pendingMoves = {};
-    print("Resetted moves 2");
     moving = false;
-    print("Resetted moves 3");
     notifyListeners();
-    print("Resetted moves");
   }
 
   move(Directions direction) {
-    // resetPendingMoves();
-    print("Calling move to $direction");
     if (moving) return;
 
-    print("Moving to $direction");
     moving = true;
     var rotatedBoard = getRotatedBoard(boardData, direction);
     Set<Position> blockedCells = {};
@@ -200,7 +193,6 @@ class Game extends ChangeNotifier {
     if (anyMove) addNumber();
     updateBricks();
     notifyListeners();
-    print("Move notified");
   }
 
   updateBricks() {
